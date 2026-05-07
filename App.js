@@ -1,24 +1,10 @@
-import React, { useState, useEffect } from 'react';
+ import React, { useState, useEffect } from 'react';
 import { 
   Search, MapPin, Briefcase, DollarSign, Menu, X, 
   Building, Zap, CheckCircle, ChevronRight, Heart, Share2, Sparkles
 } from 'lucide-react';
-{
-  "name": "afrikazi-portal",
-  "version": "1.0.0",
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "lucide-react": "^0.263.1"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build"
-  }
-}
 
-// --- MOCK 
+// --- MOCK DATA ---
 const JOB_LISTINGS = [
   {
     id: 1,
