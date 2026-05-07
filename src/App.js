@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-// Changed this line to work with your specific Netlify settings
-import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js';
+ import React, { useState, useEffect } from 'react';
 
+// This tells the app to use the Supabase engine we loaded in the HTML file
 const supabaseURL = 'https://vefxeiroytqenjxkftx.supabase.co';
 const supabaseKey = 'sb_publishable_JcXd7KhJuhV97qu489U-1g_sFfQ8UbP';
-const supabase = createClient(supabaseURL, supabaseKey);
+const supabase = window.supabase.createClient(supabaseURL, supabaseKey);
 
 function App() {
   const [view, setView] = useState('landing'); 
@@ -42,7 +41,7 @@ function App() {
     <div style={{ textAlign: 'center', padding: '40px', fontFamily: 'sans-serif' }}>
       {view === 'landing' && (
         <>
-          <h1 style={{color: '#00ad9f'}}>AfriKazi Job Portal</h1>
+          <h1 style={{color: '#00ad9f'}}>AfriKazi Portal</h1>
           <button onClick={() => setView('jobs')} style={btn}>Find a Job</button>
           <button onClick={() => setView('post')} style={{...btn, backgroundColor: '#333'}}>Post a Job</button>
         </>
@@ -53,7 +52,7 @@ function App() {
           <h2>List a New Job</h2>
           <input name="job_title" placeholder="Job Title" required style={inp} /><br/>
           <input name="location" placeholder="Location" required style={inp} /><br/>
-          <input name="pay" placeholder="Salary/Pay" required style={inp} /><br/>
+          <input name="pay" placeholder="Salary" required style={inp} /><br/>
           <textarea name="desc" placeholder="Job Description" style={{...inp, height: '80px'}} /><br/>
           <button type="submit" style={btn}>Publish Now</button>
           <button type="button" onClick={() => setView('landing')} style={{display:'block', margin:'auto', color:'blue', border:'none', background:'none'}}>Cancel</button>
