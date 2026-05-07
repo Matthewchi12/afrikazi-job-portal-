@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+// Changed this line to work with your specific Netlify settings
+import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js';
 
-// Pre-filled with your actual credentials
 const supabaseURL = 'https://vefxeiroytqenjxkftx.supabase.co';
 const supabaseKey = 'sb_publishable_JcXd7KhJuhV97qu489U-1g_sFfQ8UbP';
 const supabase = createClient(supabaseURL, supabaseKey);
@@ -43,7 +43,6 @@ function App() {
       {view === 'landing' && (
         <>
           <h1 style={{color: '#00ad9f'}}>AfriKazi Job Portal</h1>
-          <p>Find work or post new opportunities instantly.</p>
           <button onClick={() => setView('jobs')} style={btn}>Find a Job</button>
           <button onClick={() => setView('post')} style={{...btn, backgroundColor: '#333'}}>Post a Job</button>
         </>
@@ -64,15 +63,15 @@ function App() {
       {view === 'jobs' && (
         <div>
           <h2>Available Openings</h2>
-          {jobs.length === 0 ? <p>No jobs listed yet. Be the first to post!</p> : jobs.map(j => (
+          {jobs.length === 0 ? <p>Loading jobs...</p> : jobs.map(j => (
             <div key={j.id} style={{border:'1px solid #eee', padding:'15px', margin:'10px auto', maxWidth:'400px', borderRadius:'10px', textAlign:'left'}}>
               <h3>{j.title}</h3>
               <p>📍 {j.location} | 💰 {j.pay}</p>
               <p>{j.Description}</p>
-              <button style={{...btn, width: '100%', margin: '10px 0'}}>Apply Now</button>
+              <button style={{...btn, width: '100%'}}>Apply Now</button>
             </div>
           ))}
-          <button onClick={() => setView('landing')} style={btn}>Back to Home</button>
+          <button onClick={() => setView('landing')} style={btn}>Back</button>
         </div>
       )}
     </div>
@@ -80,4 +79,3 @@ function App() {
 }
 
 export default App;
-
