@@ -1,67 +1,81 @@
-import React, { useState } from 'react';
+ import React, { useState, useEffect } from 'react';
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+// PASTE YOUR KEY INSIDE THE SINGLE QUOTES BELOW
+const supabaseURL = 'https://vefxeiroytqenjxkftx.supabase.co';
+const supabaseKey = 'sb_publishable_JcXd7KhJuhV97qu489U-1g_sFfQ8UbP'; 
+const supabase = createClient(supabaseURL, supabaseKey);
 
 function App() {
-  const [showSignup, setShowSignup] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [view, setView] = useState('landing'); 
+  const [jobs, setJobs] = useState([]);
 
-  // This handles the form submission for Netlify
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const fetchJobs = async () => {
+      const { data } = await supabase.from('jobs').select('*').order('created_at', { ascending: false });
+      if (data) setJobs(data);
+    };
+    fetchJobs();
+  }, []);
+
+  const handlePostJob = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    fetch("/", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams(formData).toString(),
-    })
-      .then(() => setSubmitted(true))
-      .catch((error) => alert(error));
+    const { error } = await supabase.from('jobs').insert([{
+      title: formData.get("job_title"),
+      location: formData.get("location"),
+      pay: formData.get("pay"),
+      Description: formData.get("desc") 
+    }]);
+    if (!error) {
+      alert("Job Posted Successfully!");
+      window.location.reload();
+    } else {
+      alert("Error: " + error.message);
+    }
   };
 
-  if (submitted) {
-    return (
-      <div style={{ textAlign: 'center', padding: '50px', fontFamily: 'Arial' }}>
-        <h1>✅ Success!</h1>
-        <p>Your AfriKazi account has been created.</p>
-        <button onClick={() => setSubmitted(false)} style={btnStyle}>Back to Home</button>
-      </div>
-    );
-  }
+  const btn = { padding: '12px', backgroundColor: '#00ad9f', color: 'white', border: 'none', borderRadius: '5px', margin: '10px', fontWeight: 'bold', cursor: 'pointer' };
+  const inp = { padding: '10px', margin: '5px', width: '280px', borderRadius: '5px', border: '1px solid #ccc' };
 
   return (
-    <div style={{ textAlign: 'center', padding: '50px', fontFamily: 'Arial' }}>
-      <h1>AfriKazi Job Portal</h1>
-      <p>The AI Engine is connected and ready.</p>
-      
-      {!showSignup ? (
-        <button onClick={() => setShowSignup(true)} style={btnStyle}>Sign Up Now</button>
-      ) : (
-        <form 
-          name="signup" 
-          method="POST" 
-          data-netlify="true" 
-          onSubmit={handleSubmit}
-          style={{ 
-            marginTop: '30px', border: '1px solid #ddd', padding: '25px', 
-            borderRadius: '12px', display: 'inline-block' 
-          }}
-        >
-          {/* Hidden input for Netlify bot detection */}
-          <input type="hidden" name="form-name" value="signup" />
-          
-          <h2>Create Account</h2>
-          <input type="text" name="name" placeholder="Full Name" required style={inputStyle} /><br/>
-          <input type="email" name="email" placeholder="Email Address" required style={inputStyle} /><br/>
-          <input type="password" name="password" placeholder="Password" required style={inputStyle} /><br/>
-          <button type="submit" style={{ ...btnStyle, width: '100%' }}>Complete Sign Up</button>
-          <br/>
-          <button type="button" onClick={() => setShowSignup(false)} style={{ background: 'none', border: 'none', color: '#666', marginTop: '10px' }}>Cancel</button>
+    <div style={{ textAlign: 'center', padding: '40px', fontFamily: 'sans-serif' }}>
+      {view === 'landing' && (
+        <>
+          <h1 style={{color: '#00ad9f'}}>Job Portal</h1>
+          <button onClick={() => setView('jobs')} style={btn}>Find a Job</button>
+          <button onClick={() => setView('post')} style={{...btn, backgroundColor: '#333'}}>Post a Job</button>
+        </>
+      )}
+
+      {view === 'post' && (
+        <form onSubmit={handlePostJob}>
+          <h2>List a New Job</h2>
+          <input name="job_title" placeholder="Job Title" required style={inp} /><br/>
+          <input name="location" placeholder="Location" required style={inp} /><br/>
+          <input name="pay" placeholder="Salary/Pay" required style={inp} /><br/>
+          <textarea name="desc" placeholder="Job Description" style={{...inp, height: '80px'}} /><br/>
+          <button type="submit" style={btn}>Publish Now</button>
+          <button type="button" onClick={() => setView('landing')} style={{display:'block', margin:'auto', color:'blue', border:'none', background:'none'}}>Cancel</button>
         </form>
+      )}
+
+      {view === 'jobs' && (
+        <div>
+          <h2>Available Openings</h2>
+          {jobs.length === 0 ? <p>No jobs listed yet.</p> : jobs.map(j => (
+            <div key={j.id} style={{border:'1px solid #eee', padding:'15px', margin:'10px auto', maxWidth:'400px', borderRadius:'10px', textAlign:'left'}}>
+              <h3>{j.title}</h3>
+              <p>📍 {j.location} | 💰 {j.pay}</p>
+              <p>{j.Description}</p>
+              <button style={{...btn, width: '100%'}}>Apply Now</button>
+            </div>
+          ))}
+          <button onClick={() => setView('landing')} style={btn}>Back</button>
+        </div>
       )}
     </div>
   );
 }
-
-const inputStyle = { margin: '10px 0', padding: '12px', width: '280px', borderRadius: '6px', border: '1px solid #ccc' };
-const btnStyle = { padding: '12px 24px', fontSize: '18px', backgroundColor: '#00ad9f', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' };
 
 export default App;
